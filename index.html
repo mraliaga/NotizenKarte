@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notizen Karte</title>
+    <!-- Leaflet Css -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <!--  Css -->
+    <link rel="stylesheet" href="./style.css" />
+    <!-- Bootstrap CSS -->
+    <!-- Bootstrap Icons CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+  </head>
+  <body>
+    <!-- Aside -->
+    <aside>
+      <!-- Head -->
+      <div class="head">
+        <h1>Notlar</h1>
+        <i id="arrow" class="bi bi-chevron-up"></i>
+      </div>
+      <!-- Form -->
+      <form>
+        <!-- title -->
+
+        <div class="field">
+          <label>Title</label>
+          <input type="text" required />
+        </div>
+        <!-- Date -->
+
+        <div class="field">
+          <label>Date</label>
+          <input type="date" required />
+        </div>
+
+        <!-- Select -->
+
+        <div class="field">
+          <label>Status</label>
+          <select required>
+            <option disabled selected value="">Select</option>
+            <option value="goto">Visit</option>
+            <option value="park">Parking Area</option>
+            <option value="home">Home</option>
+            <option value="job">Work Place</option>
+          </select>
+        </div>
+        <div class="buttons">
+          <button>Cancel</button>
+          <button>Add</button>
+        </div>
+      </form>
+      <!-- List -->
+      <ul>
+        <li>
+          <div>
+            <p>Travel</p>
+            <p>23.02.25</p>
+            <p>Work</p>
+          </div>
+          <div class="icons">
+            <i class="bi bi-airplane-fill" id="fly"></i>
+            <i class="bi bi-trash-fill" id="trash"></i>
+          </div>
+        </li>
+      </ul>
+    </aside>
+    <!-- !Map -->
+    <div id="map"></div>
+
+    <!-- Leaflet js -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <!-- Js link -->
+    <script src="./main.js" type="module"></script>
+  </body>
+</html>
