@@ -152,6 +152,30 @@ function renderNotes() {
       </li>`;
     })
     .join("");
-
+  //Olusturulan kart elemanlarini Html kismina ekle
   ui.ul.innerHTML = noteCards;
+
+  //Delete iconuna tiklaninca silme islemini gerceklestir
+
+  document.querySelectorAll("li #trash").forEach((btn) => {
+    console.log(btn);
+    btn.addEventListener("click", () => deleteNote(btn.dataset.id));
+  });
+}
+
+function deleteNote(id) {
+  //Kullanicidan silme islemi icin onay al
+  const res = confirm("Do you confirm the note deletion?");
+
+  //Eger silme islemi onaylanirsa
+
+  if (res) {
+    //Idsi bilinen elemani diziden kaldir (notes[])
+    const filtred = (notes = notes.filter((note) => note.id !== +id));
+    //localstrogei guncelle
+
+    //guncel notlari render et
+
+    //guncel iconlari render et
+  }
 }
