@@ -35,6 +35,10 @@ aside {
   transition: all 0.5s;
 }
 
+aside:hover {
+  background-color: rgba(53, 53, 53, 1);
+}
+
 aside .head {
   font: "Indie Flower", cursive;
   text-align: center;
@@ -57,6 +61,11 @@ aside .head #arrow {
 aside .head h1 {
   font-size: 25px;
   flex: 1;
+}
+/* Add class */
+
+#add-title {
+  display: none;
 }
 
 form {
@@ -159,4 +168,23 @@ ul li #fly:hover {
 ul li #trash:hover {
   color: crimson;
   filter: drop-shadow(0 0 10px crimson);
+}
+
+/* Form Modu */
+
+.add {
+  height: 390px;
+}
+
+.add form {
+  display: flex;
+}
+
+.add ul,
+.add h1 {
+  display: none;
+}
+
+.add #add-title {
+  display: block;
 }
