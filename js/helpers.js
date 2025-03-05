@@ -1,8 +1,8 @@
 import { goToIcon, homeIcon, jobIcon, parkIcon } from "./constant.js";
 
 //Status durumunu belirleyen fonk
-export const getStatus = (stat) => {
-  switch (stat) {
+export const getStatus = (status) => {
+  switch (status) {
     case "goto":
       return "Visit";
     case "home":
@@ -18,8 +18,8 @@ export const getStatus = (stat) => {
 
 //Status degerine bagli olrak icon belirleyecek fonk
 
-export const getIcon = (stat) => {
-  switch (stat) {
+export const getIcon = (status) => {
+  switch (status) {
     case "goto":
       return goToIcon;
     case "home":

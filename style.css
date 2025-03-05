@@ -165,7 +165,7 @@ ul li #fly:hover {
   filter: drop-shadow(0 0 10px #2e95acc5);
 }
 
-ul li #trash:hover {
+ul li #delete:hover {
   color: crimson;
   filter: drop-shadow(0 0 10px crimson);
 }
@@ -186,5 +186,23 @@ ul li #trash:hover {
 }
 
 .add #add-title {
-  display: block;
+  display: block !important;
+}
+
+/* Gizli Mode */
+.hide {
+  height: 90px;
+}
+
+.hide .head {
+  margin-bottom: 20px;
+}
+
+.hide #arrow {
+  rotate: 180deg;
+}
+
+.hide ul,
+.hide form {
+  display: none;
 }

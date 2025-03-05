@@ -13,8 +13,6 @@ let notes = JSON.parse(localStorage.getItem("notes")) || [];
 
 window.navigator.geolocation.getCurrentPosition(
   (e) => {
-    console.log(e);
-
     loadMap([e.coords.latitude, e.coords.longitude], "Currently Location");
   },
   (e) => {
@@ -92,7 +90,7 @@ ui.form.addEventListener("submit", (e) => {
   //Bir not objesi olusturmak
 
   const newNote = {
-    //1970 itibaren gecen zamanin millisaniye cinsinden degerini aldik
+    // 1970'den itibaren geçen zamanın milisaniye cinsinden değerini aldık
     id: new Date().getTime(),
     title,
     date,
@@ -100,82 +98,111 @@ ui.form.addEventListener("submit", (e) => {
     coords: clickedCords,
   };
 
-  //Notlar dizisini guncelle yeni notu ekle
-  //Localstroge guncelle
-  //push kullanilabilir ilgili note dizisinin sonuna ekler
-  //unshift en basa getirir yeni elemani
+  // Notlar dizisini yeni notu ekle
   notes.unshift(newNote);
-
-  // Localstorage ilgili elemani ekle
+  // Localstorage'ı güncelle
   localStorage.setItem("notes", JSON.stringify(notes));
 
-  //Aside eski haline cevir
+  // Aside'ı eski haline çevir
   ui.aside.classList.remove("add");
 
-  //Formun icerigini temizle
-
-  // title.value = "";
+  // Formun içeriğini temizle
   e.target.reset();
 
-  //Notlari render etsin
+  // Notları render et
   renderNotes();
   renderMakers();
 });
 
 function renderMakers() {
-  //Her not icin bir marker olustur
+  // Haritadak markerları temizle
+  layer.clearLayers();
+  // Notlar içindeki her bir öğe için bir işaretçi ekle
   notes.map((note) => {
     const icon = getIcon(note.status);
-    //Her not icin bir marker olstur
+    // Her not için bir marker oluştur
     L.marker(note.coords, { icon }).addTo(layer).bindPopup(note.title);
   });
 }
 
-//! Noteleri render eden fonk
+// ! Notları render eden fonksiyon
 
 function renderNotes() {
   const noteCards = notes
     .map((note) => {
-      const date = new Date(note.date).toLocaleString("tr");
+      // Tarih verisi istenilen formatta düzenlendi
+      const date = new Date(note.date).toLocaleString("tr", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
 
-      const status = getStatus(note.stat);
+      const status = getStatus(note.status);
+
       return `<li>
-        <div>
-          <p>${note.title}</p>
-          <p>${date}</p>
-          <p>${status}</p>
-        </div>
-        <div class="icons">
-          <i dataset-id='${note.id}' class="bi bi-airplane-fill" id="fly"></i>
-          <i dataset-id='${note.id}' class="bi bi-trash-fill" id="trash"></i>
-        </div>
-      </li>`;
+          <div>
+            <p>${note.title}</p>
+            <p>${date}</p>
+          
+            <p>${status}</p>
+          </div>
+          <div class="icons">
+            <i data-id="${note.id}" class="bi bi-airplane-fill" id="fly"></i>
+            <i data-id="${note.id}" class="bi bi-trash-fill" id="delete"></i>
+          </div>
+        </li>`;
     })
     .join("");
-  //Olusturulan kart elemanlarini Html kismina ekle
+
+  // Oluşturulan kart elemanlarını HTML kısmına ekle
   ui.ul.innerHTML = noteCards;
+  // Delete Iconlarına tıklanınca silme işlemini gerçekleştir
+  document.querySelectorAll("li #delete").forEach((btn) => {
+    const id = btn.dataset.id;
 
-  //Delete iconuna tiklaninca silme islemini gerceklestir
+    btn.addEventListener("click", () => {
+      deleteNote(id);
+    });
+  });
 
-  document.querySelectorAll("li #trash").forEach((btn) => {
-    console.log(btn);
-    btn.addEventListener("click", () => deleteNote(btn.dataset.id));
+  document.querySelectorAll("#li #fly").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = +btn.dataset.id;
+
+      flyToNote(id);
+    });
   });
 }
 
+// ! Not silme fonksiyonu
 function deleteNote(id) {
-  //Kullanicidan silme islemi icin onay al
-  const res = confirm("Do you confirm the note deletion?");
-
-  //Eger silme islemi onaylanirsa
+  // Kullanıcıdan silme işlemi için onay al
+  const res = confirm("Not silme işlemini onaylıyor musunuz ?");
 
   if (res) {
-    //Idsi bilinen elemani diziden kaldir (notes[])
-    const filtred = (notes = notes.filter((note) => note.id !== +id));
-    //localstrogei guncelle
+    // `id`'si bilinen elemanı notes dizisinden kaldır
+    notes = notes.filter((note) => note.id !== parseInt(id));
 
-    //guncel notlari render et
+    // LocalStorage'ı güncelle
+    localStorage.setItem("notes", JSON.stringify(notes));
 
-    //guncel iconlari render et
+    // Notları render et
+    renderNotes();
+
+    // Markerları render et
+    renderMakers();
   }
 }
+
+//notlara fokslanma fonk
+function flyToNote(id) {
+  const foundedNote = notes.find((note) => note.id == id);
+
+  map.flyTo(foundedNote.coords, 12);
+}
+
+//arrow after click
+
+elements.arrowIcon.addEventListener("click", () => {
+  elements.aside.classList.toggle("hide");
+});
