@@ -1,7 +1,7 @@
 export const ui = {
   aside: document.querySelector("aside"),
-  form: document.querySelector("form"),
+  form: document.querySelector("aside form"),
   cancelBtn: document.querySelector("aside #cancel"),
   ul: document.querySelector("aside ul"),
-  arrowIcon: document.querySelector("#arrow"),
+  arrow: document.querySelector("aside #arrow"),
 };

@@ -2,92 +2,86 @@ import { personIcon } from "./js/constant.js";
 import { getIcon, getStatus } from "./js/helpers.js";
 import { ui } from "./js/ui.js";
 
-/* Kullanıcının konum bilgisine erişmek için izin isteyeceğiz. Eğer izin verirse bu konum bilgisine erişim ilgili konumu başlangıç noktası yapacağız. Eğer vermesi varsayılan bir konum belirle */
+/*
+Kullanıcının konum bilgisine erişmek için izin isteyeceğiz.Eğer izin verirse bu konum bilgisine erişip ilgili konumu başlangıç noktası yapacağız.Eğer vermezse varsayılan bir konum belirle.
 
-// Global degiskenler.
+*/
 
+// Global Değişkenler
+var map;
 let clickedCords;
 let layer;
-// ! Localstorageden gelen verileri javascript nesnesine cevir ama eger localstroge bossa boz bir dizi render et
+// ! Localstorage'dan gelen verileri javascript nesnesine çevir ama eğer localstorage boşsa boş bir dizi render et
 let notes = JSON.parse(localStorage.getItem("notes")) || [];
 
 window.navigator.geolocation.getCurrentPosition(
   (e) => {
-    loadMap([e.coords.latitude, e.coords.longitude], "Currently Location");
+    loadMap([e.coords.latitude, e.coords.longitude], "Mevcut Konum");
   },
   (e) => {
-    loadMap([39.921132, 32.861194], "Varsayilan Konum");
+    loadMap([39.921132, 32.861194], "Varsayılan Konum");
   }
 );
 
 function loadMap(currentPosition, msg) {
-  //Harita kurulumu
-  var map = L.map("map", { zoomControl: false }).setView(currentPosition, 10);
+  // Harita Kurulumu
+  map = L.map("map", {
+    zoomControl: false,
+  }).setView(currentPosition, 10);
 
-  //Harita kurulumu Haritanin ekranda render edilmesini saglar
+  // Haritanın ekrandan render edilmesini sağlar
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution:
       '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
 
-  //Ekrana basilacak isaretlerin listelenecegi bir katman olustur.
-
+  // Ekrana basılacak işaretlerin listelebeceği bir katman oluştur
   layer = L.layerGroup().addTo(map);
 
-  //Zoom butonlarini ekranin sag asagisina tasi
-
+  // Zoom butonlarını ekranın sağ aşağısına taşı
   L.control
     .zoom({
       position: "bottomright",
     })
     .addTo(map);
 
-  //Imlec ekle
+  // İmleç ekle
   L.marker(currentPosition, { icon: personIcon }).addTo(map).bindPopup(msg);
 
-  //Haritaya tiklanma ol,ayi gerceklesince
-
+  // Haritaya tıklanma olayı gerçekleşince
   map.on("click", onMapClick);
 
-  //Haritaya notlari render et
-
+  // Haritaya notları render et
   renderMakers();
   renderNotes();
 }
 
-//! Harika tiklanma olayini izle
-
+// ! Harita tıklanma olayını izle ve tıklanılan noktanın kordinatlarına eriş
 function onMapClick(e) {
-  // Tiklanilma Olayi
-  // alert("Tiklandi");
-
+  // Tıklanılma olayı
   clickedCords = [e.latlng.lat, e.latlng.lng];
 
   ui.aside.classList.add("add");
 }
 
-//Iptal Butonuna tiklayinca Asideyi tekrar eski haline ceviren fonk
+// İptal butonuna tıklayınca aside'ı tekrar eski haline çeviren fonksiyon
 
 ui.cancelBtn.addEventListener("click", () => {
-  //Aside a eklenen "add" classini kaldir.
+  // Aside a eklenen 'add' clasını kaldır
   ui.aside.classList.remove("add");
 });
 
-//Formun gonderilme olayini izle
+// ! Formun gönderilme olayını izle ve  bir fonksiyon tetikle
 ui.form.addEventListener("submit", (e) => {
-  //Sayfa yenilemei engelle
+  // Sayfa yenilemeyi engelle
   e.preventDefault();
-
+  // Formun içerisindeki verilere eriştik
   const title = e.target[0].value;
   const date = e.target[1].value;
   const status = e.target[2].value;
 
-  console.log(title);
-  console.log(date);
-  console.log(status);
-
-  //Bir not objesi olusturmak
+  // Bir not objesi oluşturmak
 
   const newNote = {
     // 1970'den itibaren geçen zamanın milisaniye cinsinden değerini aldık
@@ -156,24 +150,24 @@ function renderNotes() {
 
   // Oluşturulan kart elemanlarını HTML kısmına ekle
   ui.ul.innerHTML = noteCards;
+
   // Delete Iconlarına tıklanınca silme işlemini gerçekleştir
   document.querySelectorAll("li #delete").forEach((btn) => {
-    const id = btn.dataset.id;
-
     btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+
       deleteNote(id);
     });
   });
 
-  document.querySelectorAll("#li #fly").forEach((btn) => {
+  // Fly iconlarına tıklayınca o nota focusla
+  document.querySelectorAll("li #fly").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const id = +btn.dataset.id;
-
-      flyToNote(id);
+      const id = btn.dataset.id;
+      flyToLocation(id);
     });
   });
 }
-
 // ! Not silme fonksiyonu
 function deleteNote(id) {
   // Kullanıcıdan silme işlemi için onay al
@@ -193,16 +187,20 @@ function deleteNote(id) {
     renderMakers();
   }
 }
+// ! Haritadaki ilgili nota hareket etmeyi sağlayan fonksiyon
 
-//notlara fokslanma fonk
-function flyToNote(id) {
-  const foundedNote = notes.find((note) => note.id == id);
+function flyToLocation(id) {
+  // id'si bilinen elemanı notes dizisi içerisinden bul
+  const note = notes.find((note) => note.id === parseInt(id));
 
-  map.flyTo(foundedNote.coords, 12);
+  console.log(note);
+
+  // Bulunan notun kordinatlarına uç
+  map.flyTo(note.coords, 12);
 }
 
-//arrow after click
+// ! arrow iconuna tıklanınca çalışacak fonksiyon
 
-elements.arrowIcon.addEventListener("click", () => {
-  elements.aside.classList.toggle("hide");
+ui.arrow.addEventListener("click", () => {
+  ui.aside.classList.toggle("hide");
 });
